@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Users, Trash2, X, ArrowRight } from "lucide-react";
@@ -10,8 +10,19 @@ import { INR } from "@/lib/format";
 
 export const Route = createFileRoute("/groups")({
   head: () => ({ meta: [{ title: "Groups — CampusFinance" }] }),
-  component: () => <AppShell title="Group Splitter"><GroupsListPage /></AppShell>,
+  component: GroupsRouteShell,
 });
+
+function GroupsRouteShell() {
+  const location = useLocation();
+  const isDetailRoute = location.pathname !== "/groups";
+
+  return (
+    <AppShell title={isDetailRoute ? "Group Details" : "Group Splitter"}>
+      {isDetailRoute ? <Outlet /> : <GroupsListPage />}
+    </AppShell>
+  );
+}
 
 interface Group { id: string; name: string; description: string | null; created_at: string }
 
