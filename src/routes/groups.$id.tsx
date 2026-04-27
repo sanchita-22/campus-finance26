@@ -12,7 +12,7 @@ import { INR } from "@/lib/format";
 
 export const Route = createFileRoute("/groups/$id")({
   head: () => ({ meta: [{ title: "Group — CampusFinance" }] }),
-  component: () => <AppShell title="Group Details"><GroupDetail /></AppShell>,
+  component: GroupDetail,
 });
 
 interface Member { id: string; name: string }
