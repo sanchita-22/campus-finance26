@@ -59,9 +59,33 @@ function GroupsListPage() {
       {loading ? <p className="text-center text-muted-foreground py-10">Loading...</p> :
         groups.length === 0 ? (
           <div className="glass-card p-10 text-center">
-            <Users className="mx-auto h-10 w-10 text-muted-foreground" />
-            <h3 className="mt-3 font-semibold">No groups yet</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Create your first outing or trip and start splitting bills.</p>
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-gradient-aurora animate-aurora shadow-glow">
+              <Users className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <h3 className="mt-4 text-lg font-semibold">No groups yet</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+              Create a group to add friends, log who paid for what, split bills automatically, and see exactly who owes whom.
+            </p>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-aurora animate-aurora px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow hover:scale-105 transition"
+            >
+              <Plus className="h-4 w-4" /> Create your first group
+            </button>
+            <div className="mx-auto mt-8 grid max-w-2xl gap-3 sm:grid-cols-3 text-left">
+              <div className="rounded-xl border border-border/60 bg-background/30 p-4">
+                <div className="text-xs font-semibold text-primary">1. Add members</div>
+                <p className="mt-1 text-xs text-muted-foreground">Add friends by name — no signup needed for them.</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/30 p-4">
+                <div className="text-xs font-semibold text-primary">2. Log expenses</div>
+                <p className="mt-1 text-xs text-muted-foreground">Enter who paid and how much — split equally, by amount, or by shares.</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-background/30 p-4">
+                <div className="text-xs font-semibold text-primary">3. See settlements</div>
+                <p className="mt-1 text-xs text-muted-foreground">Get a simplified list like "Rahul pays ₹200 to Aman".</p>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
