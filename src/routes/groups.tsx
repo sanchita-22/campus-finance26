@@ -91,18 +91,28 @@ function GroupsListPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {groups.map((g, i) => (
               <motion.div key={g.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                className="glass-card group relative p-5 hover:shadow-glow transition">
-                <button onClick={() => del(g.id)} className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-lg text-destructive opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition">
+                className="relative">
+                <Link
+                  to="/groups/$id"
+                  params={{ id: g.id }}
+                  className="glass-card group block p-5 hover:shadow-glow hover:border-primary/40 hover:-translate-y-0.5 transition cursor-pointer"
+                >
+                  <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-aurora animate-aurora shadow-glow">
+                    <Users className="h-5 w-5 text-primary-foreground" />
+                  </div>
+                  <h3 className="mt-4 font-semibold">{g.name}</h3>
+                  {g.description && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{g.description}</p>}
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                    Open group <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); del(g.id); }}
+                  className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg text-destructive bg-background/60 backdrop-blur opacity-0 group-hover:opacity-100 hover:bg-destructive/15 transition"
+                  aria-label="Delete group"
+                >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-aurora animate-aurora shadow-glow">
-                  <Users className="h-5 w-5 text-primary-foreground" />
-                </div>
-                <h3 className="mt-4 font-semibold">{g.name}</h3>
-                {g.description && <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{g.description}</p>}
-                <Link to="/groups/$id" params={{ id: g.id }} className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary hover:gap-2 transition-all">
-                  Open <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
               </motion.div>
             ))}
           </div>
