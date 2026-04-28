@@ -219,8 +219,8 @@
   50% { transform: translateY(-14px) rotate(-2deg); }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px oklch(0.7 0.22 295 / 0.4); }
-  50% { box-shadow: 0 0 40px oklch(0.7 0.22 295 / 0.7), 0 0 80px oklch(0.78 0.18 195 / 0.3); }
+  0%, 100% { box-shadow: 0 0 20px oklch(0.72 0.11 88 / 0.35); }
+  50% { box-shadow: 0 0 40px oklch(0.72 0.11 88 / 0.6), 0 0 80px oklch(0.66 0.12 75 / 0.25); }
 }
 @keyframes aurora-shift {
   0%, 100% { background-position: 0% 50%; }
