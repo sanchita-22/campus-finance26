@@ -84,7 +84,7 @@ function LandingPage() {
             transition={{ duration: 0.7, delay: 0.15 }}
             className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground"
           >
-            Track every ₹, budget like a pro, get smart spending insights, and split group outings without the awkward math.
+            Campus Finance: Spend Smart. Split Easy.
           </motion.p>
 
           <motion.div
