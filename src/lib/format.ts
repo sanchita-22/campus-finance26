@@ -15,6 +15,7 @@ export const CATEGORIES = [
   { key: "shopping", label: "Shopping", icon: "🛍️", color: "var(--chart-4)" },
   { key: "entertainment", label: "Entertainment", icon: "🎬", color: "var(--chart-5)" },
   { key: "stationery", label: "Stationery", icon: "📚", color: "var(--chart-6)" },
+  { key: "health", label: "Health", icon: "🏥", color: "var(--chart-7)" },
   { key: "misc", label: "Miscellaneous", icon: "✨", color: "var(--chart-7)" },
 ] as const;
 
