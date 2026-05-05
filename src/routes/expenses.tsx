@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Pencil, Search, Filter, X } from "lucide-react";
+import { Plus, Trash2, Pencil, Search, Filter, X, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AppShell } from "@/components/AppShell";
@@ -24,30 +24,51 @@ const schema = z.object({
 
 type Period = "all" | "today" | "week" | "month";
 
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 function ExpensesPage() {
   const { expenses, loading, refresh } = useExpenses();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ExpenseRow | null>(null);
   const [period, setPeriod] = useState<Period>("all");
+  const now = new Date();
+  const [monthAnchor, setMonthAnchor] = useState<{ year: number; month: number }>({ year: now.getFullYear(), month: now.getMonth() });
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const monthPickerRef = useRef<HTMLDivElement>(null);
   const [cat, setCat] = useState<string>("all");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    if (!monthPickerOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (monthPickerRef.current && !monthPickerRef.current.contains(e.target as Node)) {
+        setMonthPickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [monthPickerOpen]);
+
   const filtered = useMemo(() => {
-    const now = new Date();
-    const start = new Date(now);
+    const nowD = new Date();
+    let start = new Date(nowD);
+    let end: Date | null = null;
     if (period === "today") start.setHours(0, 0, 0, 0);
-    else if (period === "week") start.setDate(now.getDate() - 7);
-    else if (period === "month") start.setDate(1);
-    else start.setFullYear(2000);
+    else if (period === "week") start.setDate(nowD.getDate() - 7);
+    else if (period === "month") {
+      start = new Date(monthAnchor.year, monthAnchor.month, 1, 0, 0, 0, 0);
+      end = new Date(monthAnchor.year, monthAnchor.month + 1, 1, 0, 0, 0, 0);
+    } else start.setFullYear(2000);
 
     return expenses.filter((e) => {
       const d = new Date(e.expense_date);
       if (d < start) return false;
+      if (end && d >= end) return false;
       if (cat !== "all" && e.category !== cat) return false;
       if (search && !e.notes?.toLowerCase().includes(search.toLowerCase()) && !e.category.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [expenses, period, cat, search]);
+  }, [expenses, period, cat, search, monthAnchor]);
 
   const total = filtered.reduce((s, e) => s + e.amount, 0);
 
@@ -84,8 +105,8 @@ function ExpensesPage() {
             className="w-full rounded-lg border border-border/60 bg-background/40 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary/60"
           />
         </div>
-        <div className="flex gap-2">
-          {(["today", "week", "month", "all"] as const).map((p) => (
+        <div className="flex flex-wrap gap-2">
+          {(["today", "week", "all"] as const).map((p) => (
             <button
               key={p} onClick={() => setPeriod(p)}
               className={`rounded-lg border px-3 py-1.5 text-xs capitalize transition ${period === p ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
@@ -93,6 +114,44 @@ function ExpensesPage() {
               {p}
             </button>
           ))}
+          <div className="relative" ref={monthPickerRef}>
+            <button
+              onClick={() => { setPeriod("month"); setMonthPickerOpen((o) => !o); }}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition ${period === "month" ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              {period === "month" ? `${MONTH_NAMES[monthAnchor.month]} ${monthAnchor.year}` : "Month"}
+            </button>
+            {monthPickerOpen && (
+              <div className="absolute right-0 z-30 mt-2 w-64 rounded-xl border border-border/60 bg-popover p-3 shadow-xl">
+                <div className="mb-2 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setMonthAnchor((a) => ({ ...a, year: a.year - 1 }))}
+                    className="grid h-7 w-7 place-items-center rounded-lg hover:bg-secondary/60"
+                  ><ChevronLeft className="h-4 w-4" /></button>
+                  <span className="text-sm font-semibold">{monthAnchor.year}</span>
+                  <button
+                    type="button"
+                    onClick={() => setMonthAnchor((a) => ({ ...a, year: a.year + 1 }))}
+                    className="grid h-7 w-7 place-items-center rounded-lg hover:bg-secondary/60"
+                  ><ChevronRight className="h-4 w-4" /></button>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {MONTH_NAMES.map((m, i) => {
+                    const active = monthAnchor.month === i;
+                    return (
+                      <button
+                        key={m} type="button"
+                        onClick={() => { setMonthAnchor((a) => ({ ...a, month: i })); setPeriod("month"); setMonthPickerOpen(false); }}
+                        className={`rounded-lg border px-2 py-1.5 text-xs transition ${active ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
+                      >{m}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <select
           value={cat} onChange={(e) => setCat(e.target.value)}
