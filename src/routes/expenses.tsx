@@ -24,30 +24,51 @@ const schema = z.object({
 
 type Period = "all" | "today" | "week" | "month";
 
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
 function ExpensesPage() {
   const { expenses, loading, refresh } = useExpenses();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ExpenseRow | null>(null);
   const [period, setPeriod] = useState<Period>("all");
+  const now = new Date();
+  const [monthAnchor, setMonthAnchor] = useState<{ year: number; month: number }>({ year: now.getFullYear(), month: now.getMonth() });
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const monthPickerRef = useRef<HTMLDivElement>(null);
   const [cat, setCat] = useState<string>("all");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    if (!monthPickerOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (monthPickerRef.current && !monthPickerRef.current.contains(e.target as Node)) {
+        setMonthPickerOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [monthPickerOpen]);
+
   const filtered = useMemo(() => {
-    const now = new Date();
-    const start = new Date(now);
+    const nowD = new Date();
+    let start = new Date(nowD);
+    let end: Date | null = null;
     if (period === "today") start.setHours(0, 0, 0, 0);
-    else if (period === "week") start.setDate(now.getDate() - 7);
-    else if (period === "month") start.setDate(1);
-    else start.setFullYear(2000);
+    else if (period === "week") start.setDate(nowD.getDate() - 7);
+    else if (period === "month") {
+      start = new Date(monthAnchor.year, monthAnchor.month, 1, 0, 0, 0, 0);
+      end = new Date(monthAnchor.year, monthAnchor.month + 1, 1, 0, 0, 0, 0);
+    } else start.setFullYear(2000);
 
     return expenses.filter((e) => {
       const d = new Date(e.expense_date);
       if (d < start) return false;
+      if (end && d >= end) return false;
       if (cat !== "all" && e.category !== cat) return false;
       if (search && !e.notes?.toLowerCase().includes(search.toLowerCase()) && !e.category.toLowerCase().includes(search.toLowerCase())) return false;
       return true;
     });
-  }, [expenses, period, cat, search]);
+  }, [expenses, period, cat, search, monthAnchor]);
 
   const total = filtered.reduce((s, e) => s + e.amount, 0);
 
