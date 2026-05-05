@@ -105,8 +105,8 @@ function ExpensesPage() {
             className="w-full rounded-lg border border-border/60 bg-background/40 py-2 pl-9 pr-3 text-sm outline-none focus:border-primary/60"
           />
         </div>
-        <div className="flex gap-2">
-          {(["today", "week", "month", "all"] as const).map((p) => (
+        <div className="flex flex-wrap gap-2">
+          {(["today", "week", "all"] as const).map((p) => (
             <button
               key={p} onClick={() => setPeriod(p)}
               className={`rounded-lg border px-3 py-1.5 text-xs capitalize transition ${period === p ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
@@ -114,6 +114,44 @@ function ExpensesPage() {
               {p}
             </button>
           ))}
+          <div className="relative" ref={monthPickerRef}>
+            <button
+              onClick={() => { setPeriod("month"); setMonthPickerOpen((o) => !o); }}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs transition ${period === "month" ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              {period === "month" ? `${MONTH_NAMES[monthAnchor.month]} ${monthAnchor.year}` : "Month"}
+            </button>
+            {monthPickerOpen && (
+              <div className="absolute right-0 z-30 mt-2 w-64 rounded-xl border border-border/60 bg-popover p-3 shadow-xl">
+                <div className="mb-2 flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => setMonthAnchor((a) => ({ ...a, year: a.year - 1 }))}
+                    className="grid h-7 w-7 place-items-center rounded-lg hover:bg-secondary/60"
+                  ><ChevronLeft className="h-4 w-4" /></button>
+                  <span className="text-sm font-semibold">{monthAnchor.year}</span>
+                  <button
+                    type="button"
+                    onClick={() => setMonthAnchor((a) => ({ ...a, year: a.year + 1 }))}
+                    className="grid h-7 w-7 place-items-center rounded-lg hover:bg-secondary/60"
+                  ><ChevronRight className="h-4 w-4" /></button>
+                </div>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {MONTH_NAMES.map((m, i) => {
+                    const active = monthAnchor.month === i;
+                    return (
+                      <button
+                        key={m} type="button"
+                        onClick={() => { setMonthAnchor((a) => ({ ...a, month: i })); setPeriod("month"); setMonthPickerOpen(false); }}
+                        className={`rounded-lg border px-2 py-1.5 text-xs transition ${active ? "border-primary/60 bg-primary/15 text-foreground" : "border-border/60 text-muted-foreground hover:bg-secondary/40"}`}
+                      >{m}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <select
           value={cat} onChange={(e) => setCat(e.target.value)}
