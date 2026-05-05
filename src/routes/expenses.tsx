@@ -28,7 +28,7 @@ function ExpensesPage() {
   const { expenses, loading, refresh } = useExpenses();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ExpenseRow | null>(null);
-  const [period, setPeriod] = useState<Period>("month");
+  const [period, setPeriod] = useState<Period>("all");
   const [cat, setCat] = useState<string>("all");
   const [search, setSearch] = useState("");
 
