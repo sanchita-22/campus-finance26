@@ -28,7 +28,7 @@ function ExpensesPage() {
   const { expenses, loading, refresh } = useExpenses();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ExpenseRow | null>(null);
-  const [period, setPeriod] = useState<Period>("month");
+  const [period, setPeriod] = useState<Period>("all");
   const [cat, setCat] = useState<string>("all");
   const [search, setSearch] = useState("");
 
@@ -121,7 +121,19 @@ function ExpensesPage() {
                 <tr><td colSpan={5} className="py-10 text-center text-muted-foreground">Loading...</td></tr>
               ) : filtered.length === 0 ? (
                 <tr><td colSpan={5} className="py-10 text-center text-muted-foreground">
-                  No expenses yet. Click "Add expense" to log one.
+                  {expenses.length === 0 ? (
+                    <>No expenses yet. Click "Add expense" to log one.</>
+                  ) : (
+                    <>
+                      No expenses match these filters.{" "}
+                      <button
+                        onClick={() => { setPeriod("all"); setCat("all"); setSearch(""); }}
+                        className="ml-1 font-medium text-primary underline-offset-2 hover:underline"
+                      >
+                        Clear filters
+                      </button>
+                    </>
+                  )}
                 </td></tr>
               ) : filtered.map((e) => {
                 const meta = categoryMeta(e.category);
