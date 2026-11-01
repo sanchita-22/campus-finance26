@@ -73,7 +73,19 @@ A web-based personal finance management application designed to help users track
    npm install --legacy-peer-deps
    ```
 
-4. Configure the required Supabase environment variables using the project's environment configuration.
+4. Configure environment variables
+
+```bash
+cp .env.example .env
+```
+
+Open the `.env` file and replace the placeholders with your Supabase project credentials.
+
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are used for client-side configuration.
+- `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are used for server-side configuration.
+- `SUPABASE_SERVICE_ROLE_KEY` is used for server-side administrative operations. Keep this key secret and never expose it in client-side code.
+
+Never commit your actual .env file or expose your Supabase secret keys on GitHub.
 
 5. Start the development server:
 
