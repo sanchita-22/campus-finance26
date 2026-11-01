@@ -58,7 +58,7 @@ A web-based personal finance management application designed to help users track
 1. Clone the repository:
 
    ```bash
-   git clone YOUR_REPOSITORY_URL
+   git clone (https://github.com/sanchita-22/campus-finance26)
    ```
 
 2. Navigate to the project directory:
